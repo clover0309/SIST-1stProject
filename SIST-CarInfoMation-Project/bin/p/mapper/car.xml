@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="car">
+	
+	<!-- 차 번호와 키로수 입력 -->
+	<insert id="addCar" parameterType="p.vo.CarVO">
+    	INSERT INTO car_t(c_number, c_km, c_ok, c_type, c_name) VALUES(#{c_number}, #{c_km}, #{c_ok}, #{c_type}, #{c_name})
+	</insert>
+	
+	<!-- 현재 사용자에게 차량을 추가하기 위해 차량 code select -->
+	<select id="getC_code" resultType = "String" parameterType="String">
+		SELECT c_code FROM car_t WHERE c_number = #{num}
+	</select>
+	
+	<!-- 추가된 차량을 현재 사용자에게 입력 -->
+	<insert id="addCarToMember" parameterType="map">
+		UPDATE member_t SET c_code = #{c_code} WHERE m_code = #{m_code}
+	</insert>
+	
+	<update id="updateCar" parameterType="p.vo.CarVO">
+		UPDATE car_t
+		<trim prefix="SET" suffixOverrides = ",">
+			<if test = "c_number != null"> c_number = #{c_number},</if>
+			<if test = "c_km != null"> c_km = #{c_km},</if>
+			<if test = "c_ok != null"> c_ok = #{c_ok},</if>
+			<if test = "c_type != null"> c_type = #{c_type}</if> 
+			<if test = "c_name != null"> c_name = #{c_name}</if> 
+		</trim>
+		WHERE c_code = #{c_code}
+	</update>
+	
+	<!-- 주행거리 찾는 SQL문 -->
+	<select id = "search_km" resultType="String" parameterType="String">
+		SELECT c_km FROM car_t WHERE c_code = #{code}
+	</select>
+	
+	<!-- 주행거리 업데이트 -->
+	<update id="update_km" parameterType="map">
+	    UPDATE car_t SET c_km = c_km + #{new_km} WHERE c_code = #{c_code}
+	</update>
+	
+	<!-- 멤버의 c_code를 통해 차량 객체를 select -->
+	<select id="getCar" resultType="p.vo.CarVO" parameterType="String">
+		SELECT * FROM car_t WHERE c_code = #{c_code}
+	</select>
+	
+	<select id="showCar" resultType="p.vo.CarVO">
+        SELECT * FROM car_t
+    </select>
+    
+    <!-- 차량 코드를 통해 차량 번호를 반환 -->
+    <select id="getNum" resultType= "String" parameterType="String">
+        SELECT c_number FROM car_t WHERE c_code = #{c_code}
+    </select>
+    
+	<update id="updateOk" parameterType="String">
+		UPDATE car_t SET c_type = "1" WHERE c_code = #{c_code}
+	</update>
+	
+</mapper>

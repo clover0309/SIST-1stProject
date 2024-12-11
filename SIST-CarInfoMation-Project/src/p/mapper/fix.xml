@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fix">
+	
+    <select id="showMemberFix" resultType="p.vo.FixVO" parameterType="String">
+		SELECT * FROM fix_t WHERE m_code = ${m_c}
+	</select>
+	
+	<select id="showCarFix" resultType="p.vo.FixVO" parameterType="String">
+		SELECT * FROM fix_t WHERE c_code = ${c_c}
+	</select>
+	
+	<!-- fix_t의 테이블을 전부 보여줌. -->
+	<select id="showFix" resultType="p.vo.FixVO">
+        SELECT * FROM fix_t
+    </select>
+	
+	<!-- 정기점검일 계산 sql 결과값은 0과 1로만 나옴 -->
+	<!-- 현재쓰인 fixdate_calc는 ai가 써줌. 이를통해 분석을 진행해야함. -->
+	<select id="fixdate_calc" resultType="int" parameterType="String">
+		SELECT CASE WHEN DATEDIFF(NOW(),fix_date) <![CDATA[<=]]> 355
+		AND YEAR(fix_date) <![CDATA[>=]]> YEAR(NOW()) THEN 0
+		ELSE 1 END as fixdate_calc
+		FROM fix_t WHERE m_code = #{m_code} AND fix_type = 1 AND c_code = (SELECT c_code FROM member_t WHERE m_code = #{m_code})
+	</select>
+	
+	<select id="find_car" resultType="String" parameterType="String">
+		SELECT DISTINCT c_code FROM fix_t WHERE m_code = #{m_code} AND
+		DATEDIFF(NOW(), fix_date) <![CDATA[<=]]> 355
+ 		AND YEAR(fix_date) <![CDATA[>=]]> YEAR(NOW()) AND c_code = (SELECT c_code FROM member_t WHERE m_code = #{m_code})
+ 	</select>
+	
+	
+	<!-- 정비 이력 추가 -->
+	<insert id="addFix" parameterType="p.vo.FixVO">
+		INSERT INTO fix_t (m_code, c_code, fix_date, fix_price, fix_type, u_code1, u_code2, u_code3, u_code4, fix_text, img_path) 
+		VALUES(#{m_code}, #{c_code}, #{fix_date}, #{fix_price}, #{fix_type}, #{u_code1}, #{u_code2}, #{u_code3}, #{u_code4}, #{fix_text}, #{img_path})
+	</insert>
+	
+	<select id="getMonthly" resultType="p.vo.FixVO" parameterType="String">
+		SELECT * FROM fix_t WHERE month(fix_date) = month(now()) AND year(fix_date) = year(now()) AND m_code = #{m_code}
+	</select>
+	
+	<update id="editFix" parameterType="p.vo.FixVO">
+    	UPDATE fix_t SET fix_date = #{fix_date}, fix_price = #{fix_price}, fix_type = #{fix_type}, u_code1 = #{u_code1}, 
+    	u_code2 = #{u_code2}, u_code3 = #{u_code3}, u_code4 = #{u_code4}, fix_text = #{fix_text}, img_path = #{img_path} WHERE f_code = #{f_code}
+    </update>
+	
+	<select id="getCount1" resultType="int" parameterType="String">
+		SELECT COUNT(u_code1) FROM fix_t WHERE m_code = #{m_code} AND month(fix_date) = month(now()) GROUP BY m_code;
+	</select>
+	
+	<select id="getCount2" resultType="int" parameterType="String">
+		SELECT COUNT(u_code2) FROM fix_t WHERE m_code = #{m_code} AND month(fix_date) = month(now()) GROUP BY m_code;
+	</select>
+	
+	<select id="getCount3" resultType="int" parameterType="String">
+		SELECT COUNT(u_code3) FROM fix_t WHERE m_code = #{m_code} AND month(fix_date) = month(now()) GROUP BY m_code;
+	</select>
+	
+	<select id="getCount4" resultType="int" parameterType="String">
+		SELECT COUNT(u_code4) FROM fix_t WHERE m_code = #{m_code} AND month(fix_date) = month(now()) GROUP BY m_code;
+	</select>
+	
+	<select id="getMonth" resultType="String">
+		SELECT month(now())
+	</select>
+	
+	<!-- 정기 정비 기록 확인 -->
+	<select id="checkFix" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM fix_t WHERE c_code = #{c_code} AND fix_type = '1' AND 
+			MONTH(fix_date) = MONTH(CURDATE()) AND YEAR(fix_date) = YEAR(CURDATE())
+	</select>
+	
+	
+</mapper>

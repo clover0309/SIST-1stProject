@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+<configuration>
+  <environments default="">
+    <environment id="">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://180.71.29.2:3306/car_db"/>
+        <property name="username" value="sist"/>
+        <property name="password" value="sist1111"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <mappers>
+    <mapper resource="p/mapper/car.xml"/>
+    <mapper resource="p/mapper/change.xml"/>
+    <mapper resource="p/mapper/fix.xml"/>
+    <mapper resource="p/mapper/member.xml"/>
+    <mapper resource="p/mapper/use.xml"/>
+	<mapper resource="p/mapper/info.xml"/>
+  </mappers>
+</configuration>

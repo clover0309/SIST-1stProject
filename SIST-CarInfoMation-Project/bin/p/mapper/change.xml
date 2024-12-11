@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="change">
+	
+	<!-- change_t의 테이블을 보여줌. -->
+	<select id="showChange" resultType="p.vo.ChangeVO">
+		select * from change_t;
+	</select>
+	
+	<select id="showCarChange" resultType="p.vo.ChangeVO" parameterType="String">
+		select * from change_t WHERE c_code = #{c_code};
+	</select>
+	
+	 <!-- 특정 회원의 소유 변경 이력 조회 -->
+    <select id="selectChangesByMember" parameterType="string" resultType="p.vo.ChangeVO">
+		SELECT * FROM change_t WHERE m1_code = #{m_code} OR (m1_code IS NULL AND m2_code = #{m_code}) ORDER BY ch_date
+    </select>
+	
+    <update id="editChange" parameterType="p.vo.ChangeVO">
+    	UPDATE change_t
+    	<trim prefix="SET" suffixOverrides = ",">
+			<if test = "m1_code != null"> m1_code = #{m1_code},</if>
+			<if test = "c_code != null"> c_code = #{c_code},</if> 
+			<if test = "ch_date != null"> ch_date = #{ch_date},</if> 
+			<if test = "ch_type != null"> ch_type = #{ch_type},</if> 
+			m2_code = #{m2_code, jdbcType=VARCHAR}
+		</trim>
+		WHERE ch_code = #{ch_code}
+    </update>
+    
+    <insert id="addChange1" parameterType="Map">
+    	INSERT INTO change_t(m1_code, m2_code, c_code, ch_date, ch_type) VALUE(#{m1_code}, #{m2_code}, #{c_code}, now(), "1")
+    </insert>
+    
+    <insert id="addChange2" parameterType="Map">
+    	INSERT INTO change_t(m1_code, m2_code, c_code, ch_date, ch_type) VALUE(#{m1_code}, NULL, #{c_code}, now(), "0")
+    </insert>
+    
+    <insert id="addChange3" parameterType="Map">
+    	INSERT INTO change_t(m1_code, m2_code, c_code, ch_date, ch_type) VALUE(NULL, #{m2_code}, #{c_code}, now(), "2")
+    </insert>
+	
+</mapper>

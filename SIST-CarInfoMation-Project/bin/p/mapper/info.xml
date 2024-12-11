@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="info">
+	
+	<select id="total" resultType="p.vo.InfoVO">
+		SELECT * FROM info_t
+	</select>
+	
+	<insert id="addInfo" parameterType="p.vo.InfoVO">
+		INSERT INTO info_t(i_date, i_text, i_type, m_code) VALUE(now(), #{i_text}, #{i_type}, #{m_code, jdbcType=VARCHAR})
+	</insert>
+	
+</mapper>

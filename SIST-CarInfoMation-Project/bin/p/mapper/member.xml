@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+	
+	<!-- member_t를 전부 출력함. -->
+	<select id="showMember" resultType="p.vo.MemberVO" >
+		SELECT * FROM member_t
+	</select>
+	<!-- 아이디 검증 -->
+ 	 <select id="search_id" resultType="int" parameterType="String">
+ 	 	SELECT count(*) FROM member_t WHERE m_name = #{n}
+ 	 </select>
+  
+  	<!-- 비밀번호 확인 -->
+  	<select id="search_pass" resultType="String" parameterType="String">
+  		SELECT m_password FROM member_t WHERE m_name = #{n}
+  	</select>
+
+	<!-- 멤버값 반환 -->
+	<select id="setMember" resultType="p.vo.MemberVO" parameterType="Map">
+		SELECT * FROM member_t WHERE m_name = #{id} AND m_password = #{pw}
+	</select>
+	
+	<select id="resetMember" resultType="p.vo.MemberVO" parameterType="String">
+		SELECT * FROM member_t WHERE m_code = #{code}
+	</select>
+	
+	<update id="editMember" parameterType="p.vo.MemberVO">
+    	UPDATE member_t SET m_name = #{m_name}, m_password = #{m_password}, c_code = #{c_code, jdbcType=VARCHAR} WHERE m_code = ${m_code}
+    </update>
+    
+    <!-- 멤버 코드로 멤버 이름 반환 -->
+    <select id="getName" resultType = "String" parameterType="String">
+    	SELECT m_name FROM member_t WHERE m_code = #{m_code}
+    </select>
+    
+    <!-- 입력값을 받아 검색 -->
+    <select id="searchBy" resultType="p.vo.MemberVO" parameterType="String">
+		SELECT * FROM member_t WHERE m_name LIKE CONCAT('%', #{str}, '%') OR c_code IN (SELECT c_code FROM car_t WHERE c_number LIKE CONCAT('%', #{str}, '%'))
+    </select>
+    
+    <update id="addTo" parameterType="Map">
+    	UPDATE member_t SET c_code = #{c_code} WHERE m_code = #{m_code}
+    </update>
+    
+    <update id="deleteCar" parameterType="String">
+    	UPDATE member_t SET c_code = NULL WHERE m_code = #{m_code}
+    </update>
+    
+	
+	
+</mapper>
